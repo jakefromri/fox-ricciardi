@@ -24,6 +24,18 @@ export function BlogPost() {
 
   return (
     <article className="max-w-2xl mx-auto space-y-10">
+      {/* Cover image — full width, above header */}
+      {post.cover_image_url && (
+        <div className="-mx-4 sm:-mx-6 rounded-xl overflow-hidden">
+          <img
+            src={post.cover_image_url}
+            alt={post.title}
+            className="w-full h-64 sm:h-80 object-cover"
+          />
+        </div>
+      )}
+
+
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-3xl font-semibold tracking-tight leading-snug">
           {post.title}

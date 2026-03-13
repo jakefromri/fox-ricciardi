@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { usePost, useCreatePost, useUpdatePost } from '@/hooks/usePosts'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,11 +14,13 @@ import {
 } from '@/components/ui/select'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
 import { slugify } from '@/lib/utils'
+import { ImagePlus, X } from 'lucide-react'
 
 export function PostEditor() {
   const { id } = useParams<{ id?: string }>()
   const navigate = useNavigate()
   const isNewPost = !id
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: post, isLoading: isPostLoading } = usePost(id || '')
   const createPost = useCreatePost()
@@ -28,6 +31,8 @@ export function PostEditor() {
   const [excerpt, setExcerpt] = useState('')
   const [content, setContent] = useState({})
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -38,6 +43,7 @@ export function PostEditor() {
       setExcerpt(post.excerpt || '')
       setContent(post.content || {})
       setStatus(post.status)
+      setCoverImageUrl(post.cover_image_url || null)
     }
   }, [post, isNewPost])
 
@@ -46,6 +52,48 @@ export function PostEditor() {
     if (isNewPost && !slug) {
       setSlug(slugify(value))
     }
+  }
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a JPG, PNG, WebP, or GIF image.')
+      return
+    }
+
+    setIsUploadingImage(true)
+    setError('')
+
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `posts/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('post-images')
+        .upload(path, file, { upsert: false })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(path)
+
+      setCoverImageUrl(data.publicUrl)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Image upload failed')
+    } finally {
+      setIsUploadingImage(false)
+      // Reset input so the same file can be re-selected after removal
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveCoverImage = () => {
+    setCoverImageUrl(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleSave = async () => {
@@ -64,6 +112,7 @@ export function PostEditor() {
         excerpt,
         content,
         status,
+        cover_image_url: coverImageUrl,
         published_at:
           status === 'published' && post?.status !== 'published'
             ? new Date().toISOString()
@@ -73,10 +122,7 @@ export function PostEditor() {
       if (isNewPost) {
         await createPost.mutateAsync(postData as any)
       } else {
-        await updatePost.mutateAsync({
-          id: id!,
-          post: postData,
-        })
+        await updatePost.mutateAsync({ id: id!, post: postData })
       }
 
       navigate('/admin/posts')
@@ -88,12 +134,12 @@ export function PostEditor() {
   }
 
   if (!isNewPost && isPostLoading) {
-    return <div>Loading post...</div>
+    return <div className="text-muted-foreground py-12">Loading post...</div>
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">
+      <h1 className="text-3xl font-semibold tracking-tight">
         {isNewPost ? 'New Post' : 'Edit Post'}
       </h1>
 
@@ -134,6 +180,56 @@ export function PostEditor() {
         />
       </div>
 
+      {/* Cover Image */}
+      <div className="space-y-2">
+        <Label>Cover Image</Label>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          className="hidden"
+          onChange={handleImageSelect}
+        />
+        {coverImageUrl ? (
+          <div className="relative w-full rounded-lg overflow-hidden border border-border group">
+            <img
+              src={coverImageUrl}
+              alt="Cover"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+              >
+                Replace
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleRemoveCoverImage}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploadingImage}
+            className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-muted-foreground transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ImagePlus className="h-6 w-6" />
+            <span className="text-sm">
+              {isUploadingImage ? 'Uploading...' : 'Add cover image'}
+            </span>
+          </button>
+        )}
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="status">Status</Label>
         <Select value={status} onValueChange={(value: any) => setStatus(value)}>
@@ -153,7 +249,7 @@ export function PostEditor() {
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={handleSave} disabled={isSaving}>
+        <Button onClick={handleSave} disabled={isSaving || isUploadingImage}>
           {isSaving ? 'Saving...' : 'Save Post'}
         </Button>
         <Button variant="outline" onClick={() => navigate('/admin/posts')}>
