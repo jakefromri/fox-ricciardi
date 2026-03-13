@@ -4,6 +4,7 @@ export interface Post {
   slug: string
   content: Record<string, unknown>
   excerpt: string | null
+  cover_image_url: string | null
   status: 'draft' | 'published'
   published_at: string | null
   created_at: string
