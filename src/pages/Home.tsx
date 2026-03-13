@@ -31,7 +31,7 @@ export function Home() {
         <div>
           <h1 className="text-4xl font-bold mb-4">Hi, I'm Jake</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            {profile?.bio || 'Product Manager, builder, and writer.'}
+            {profile?.bio || 'Product Manager, builder, and writer. [dev workflow test]'}
           </p>
         </div>
 
