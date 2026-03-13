@@ -17,5 +17,8 @@ export interface Profile {
   linkedin_url: string | null
   instagram_url: string | null
   email: string | null
+  blog_name: string
+  blog_tagline: string | null
+  blog_cover_image_url: string | null
   updated_at: string
 }

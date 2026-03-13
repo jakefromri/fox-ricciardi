@@ -25,14 +25,25 @@ export function Home() {
 
   return (
     <div className="space-y-16">
-      {/* Hero Section */}
+      {/* Site cover image */}
+      {profile?.blog_cover_image_url && (
+        <div className="-mx-4 sm:-mx-6 -mt-8 rounded-b-xl overflow-hidden">
+          <img
+            src={profile.blog_cover_image_url}
+            alt={profile.blog_name || 'Blog cover'}
+            className="w-full h-52 sm:h-64 object-cover"
+          />
+        </div>
+      )}
+
+      {/* Hero */}
       <section className="space-y-5 pt-4">
         <div>
           <h1 className="text-4xl font-semibold tracking-tight mb-4 leading-tight">
-            Hi, I'm Jake
+            {profile?.blog_name || 'Hi, I\'m Jake'}
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-            {profile?.bio || 'Product Manager, builder, and writer.'}
+            {profile?.blog_tagline || profile?.bio || 'Product Manager, builder, and writer.'}
           </p>
         </div>
 
@@ -64,7 +75,7 @@ export function Home() {
         </div>
       </section>
 
-      {/* Recent Posts */}
+      {/* Recent posts */}
       {recentPosts && recentPosts.length > 0 && (
         <section className="space-y-5">
           <div className="flex items-center justify-between">
