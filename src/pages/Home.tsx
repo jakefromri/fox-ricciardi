@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom'
 import { Mail, Linkedin, Instagram } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import { Profile, Post } from '@/types'
+import { Profile } from '@/types'
 import { useRecentPosts } from '@/hooks/usePosts'
 import { PostCard } from '@/components/blog/PostCard'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/utils'
 
 export function Home() {
   const { data: profile } = useQuery({

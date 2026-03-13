@@ -1,4 +1,4 @@
-import { createBrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { AdminLayout } from '@/components/layout/AdminLayout'

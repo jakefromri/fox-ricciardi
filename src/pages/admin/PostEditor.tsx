@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/select'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
 import { slugify } from '@/lib/utils'
-import { Post } from '@/types'
 
 export function PostEditor() {
   const { id } = useParams<{ id?: string }>()
