@@ -7,7 +7,7 @@ This document walks through setting up the three-environment workflow for this p
 ## Current State
 
 **What exists now (prod only):**
-- ✅ Production Supabase project: `vbburmpaeonjmsnsxugd.supabase.co`
+- ✅ Production Supabase project: `[PROD-PROJECT-REF].supabase.co`
 - ✅ Production Vercel deployment: `jake.foxricciardi.com`
 - ✅ Production database schema & RLS policies
 - ❌ Dev environment (need to create)
@@ -69,8 +69,8 @@ This creates the `dev` branch and pushes it to GitHub. From now on:
 |----------|-------|-------|
 | `VITE_SUPABASE_URL` | `https://[YOUR-DEV-PROJECT].supabase.co` | **Preview** |
 | `VITE_SUPABASE_ANON_KEY` | [DEV_ANON_KEY] | **Preview** |
-| `VITE_SUPABASE_URL` | `https://vbburmpaeonjmsnsxugd.supabase.co` | **Production** |
-| `VITE_SUPABASE_ANON_KEY` | `sb_publishable_URzIL_kqB5BYVrOhBLhaGQ_cmkQJUh3` | **Production** |
+| `VITE_SUPABASE_URL` | `https://[PROD-PROJECT-REF].supabase.co` | **Production** |
+| `VITE_SUPABASE_ANON_KEY` | `[PROD-ANON-KEY]` | **Production** |
 
 **How Vercel picks which ones to use:**
 - When deploying `dev` branch or PRs → uses **Preview** scope variables

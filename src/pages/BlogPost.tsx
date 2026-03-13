@@ -35,6 +35,7 @@ export function BlogPost() {
         </div>
       )}
 
+
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-3xl font-semibold tracking-tight leading-snug">
           {post.title}
