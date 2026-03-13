@@ -13,8 +13,8 @@ Once you've created the dev Supabase project, configure Vercel to use separate c
 |----------|-------|-------|
 | `VITE_SUPABASE_URL` | `https://fox-ricciardi-dev.supabase.co` | **Preview** |
 | `VITE_SUPABASE_ANON_KEY` | [DEV_ANON_KEY] | **Preview** |
-| `VITE_SUPABASE_URL` | `https://vbburmpaeonjmsnsxugd.supabase.co` | **Production** |
-| `VITE_SUPABASE_ANON_KEY` | `sb_publishable_URzIL_kqB5BYVrOhBLhaGQ_cmkQJUh3` | **Production** |
+| `VITE_SUPABASE_URL` | `https://[PROD-PROJECT-REF].supabase.co` | **Production** |
+| `VITE_SUPABASE_ANON_KEY` | `[PROD-ANON-KEY]` | **Production** |
 
 ### How Vercel Uses These
 
