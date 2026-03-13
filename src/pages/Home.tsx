@@ -16,7 +16,6 @@ export function Home() {
         .select('*')
         .eq('id', 1)
         .single()
-
       if (error) throw error
       return data as Profile
     },
@@ -25,38 +24,39 @@ export function Home() {
   const { data: recentPosts } = useRecentPosts(3)
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {/* Hero Section */}
-      <section className="space-y-6">
+      <section className="space-y-5 pt-4">
         <div>
-          <h1 className="text-4xl font-bold mb-4">Hi, I'm Jake</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            {profile?.bio || 'Product Manager, builder, and writer. [dev workflow test]'}
+          <h1 className="text-4xl font-semibold tracking-tight mb-4 leading-tight">
+            Hi, I'm Jake
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
+            {profile?.bio || 'Product Manager, builder, and writer.'}
           </p>
         </div>
 
-        {/* Links */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           {profile?.email && (
             <a href={`mailto:${profile.email}`}>
-              <Button variant="outline" size="sm">
-                <Mail className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="text-muted-foreground hover:text-foreground">
+                <Mail className="h-3.5 w-3.5 mr-1.5" />
                 Email
               </Button>
             </a>
           )}
           {profile?.linkedin_url && (
             <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm">
-                <Linkedin className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="text-muted-foreground hover:text-foreground">
+                <Linkedin className="h-3.5 w-3.5 mr-1.5" />
                 LinkedIn
               </Button>
             </a>
           )}
           {profile?.instagram_url && (
             <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm">
-                <Instagram className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="text-muted-foreground hover:text-foreground">
+                <Instagram className="h-3.5 w-3.5 mr-1.5" />
                 Instagram
               </Button>
             </a>
@@ -66,12 +66,12 @@ export function Home() {
 
       {/* Recent Posts */}
       {recentPosts && recentPosts.length > 0 && (
-        <section className="space-y-4">
+        <section className="space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Recent Posts</h2>
+            <h2 className="text-xl font-semibold tracking-tight">Recent writing</h2>
             <Link to="/blog">
-              <Button variant="ghost" size="sm">
-                View all →
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-sm">
+                All posts →
               </Button>
             </Link>
           </div>

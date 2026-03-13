@@ -10,11 +10,11 @@ export function BlogPost() {
   const { data: post, isLoading } = usePostBySlug(slug!)
 
   if (isLoading) {
-    return <div>Loading post...</div>
+    return <div className="text-muted-foreground py-12">Loading...</div>
   }
 
   if (!post) {
-    return <div>Post not found.</div>
+    return <div className="text-muted-foreground py-12">Post not found.</div>
   }
 
   const htmlContent = generateHTML(post.content, [
@@ -23,16 +23,29 @@ export function BlogPost() {
   ])
 
   return (
-    <article className="max-w-2xl mx-auto space-y-8">
-      <header>
-        <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
-        <p className="text-muted-foreground">
+    <article className="max-w-2xl mx-auto space-y-10">
+      {/* Cover image — full width, above header */}
+      {post.cover_image_url && (
+        <div className="-mx-4 sm:-mx-6 rounded-xl overflow-hidden">
+          <img
+            src={post.cover_image_url}
+            alt={post.title}
+            className="w-full h-64 sm:h-80 object-cover"
+          />
+        </div>
+      )}
+
+      <header className="space-y-3 pb-8 border-b border-border">
+        <h1 className="text-3xl font-semibold tracking-tight leading-snug">
+          {post.title}
+        </h1>
+        <p className="text-sm text-muted-foreground">
           {formatDate(post.published_at)}
         </p>
       </header>
 
       <div
-        className="prose prose-sm dark:prose-invert max-w-none"
+        className="blog-content"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     </article>
