@@ -1,25 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
-import { Profile } from '@/types'
+import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 
 export function Header() {
   const { session, signOut } = useAuth()
-
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('*')
-        .eq('id', 1)
-        .single()
-      if (error) throw error
-      return data as Profile
-    },
-  })
+  const { data: profile } = useProfile()
 
   const blogName = profile?.blog_name || 'Jake Ricciardi'
 

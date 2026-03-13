@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useProfile, useUpdateProfile } from '@/hooks/useProfile'
 import { supabase } from '@/lib/supabase'
-import { Profile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,37 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ImagePlus, X } from 'lucide-react'
 
 export function BlogSettings() {
-  const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('*')
-        .eq('id', 1)
-        .single()
-      if (error) throw error
-      return data as Profile
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: Partial<Profile>) => {
-      const { data: result, error } = await supabase
-        .from('profile')
-        .update(data)
-        .eq('id', 1)
-        .select()
-        .single()
-      if (error) throw error
-      return result as Profile
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
+  const { data: profile, isLoading } = useProfile()
+  const updateProfile = useUpdateProfile()
 
   const [blogName, setBlogName] = useState('')
   const [blogTagline, setBlogTagline] = useState('')
@@ -79,10 +50,7 @@ export function BlogSettings() {
 
       if (uploadError) throw uploadError
 
-      const { data } = supabase.storage
-        .from('post-images')
-        .getPublicUrl(path)
-
+      const { data } = supabase.storage.from('post-images').getPublicUrl(path)
       setCoverImageUrl(data.publicUrl)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Image upload failed')
@@ -100,7 +68,7 @@ export function BlogSettings() {
     setError('')
     setSaved(false)
     try {
-      await updateMutation.mutateAsync({
+      await updateProfile.mutateAsync({
         blog_name: blogName.trim(),
         blog_tagline: blogTagline.trim() || null,
         blog_cover_image_url: coverImageUrl,
@@ -175,28 +143,12 @@ export function BlogSettings() {
           />
           {coverImageUrl ? (
             <div className="relative w-full rounded-lg overflow-hidden border border-border group">
-              <img
-                src={coverImageUrl}
-                alt="Blog cover"
-                className="w-full h-48 object-cover"
-              />
+              <img src={coverImageUrl} alt="Blog cover" className="w-full h-48 object-cover" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingImage}
-                >
+                <Button size="sm" variant="secondary" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImage}>
                   Replace
                 </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => {
-                    setCoverImageUrl(null)
-                    if (fileInputRef.current) fileInputRef.current.value = ''
-                  }}
-                >
+                <Button size="sm" variant="destructive" onClick={() => { setCoverImageUrl(null); if (fileInputRef.current) fileInputRef.current.value = '' }}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -209,16 +161,14 @@ export function BlogSettings() {
               className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-muted-foreground transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ImagePlus className="h-6 w-6" />
-              <span className="text-sm">
-                {isUploadingImage ? 'Uploading...' : 'Add cover image'}
-              </span>
+              <span className="text-sm">{isUploadingImage ? 'Uploading...' : 'Add cover image'}</span>
             </button>
           )}
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={updateMutation.isPending || isUploadingImage}>
-        {updateMutation.isPending ? 'Saving...' : 'Save settings'}
+      <Button onClick={handleSave} disabled={updateProfile.isPending || isUploadingImage}>
+        {updateProfile.isPending ? 'Saving...' : 'Save settings'}
       </Button>
     </div>
   )
