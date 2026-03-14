@@ -13,6 +13,7 @@ import { PostEditor } from '@/pages/admin/PostEditor'
 import { ProfileEditor } from '@/pages/admin/ProfileEditor'
 import { BlogSettings } from '@/pages/admin/BlogSettings'
 import { ApiKeys } from '@/pages/admin/ApiKeys'
+import { Comments } from '@/pages/admin/Comments'
 import { ApiDocs } from '@/pages/ApiDocs'
 
 function PublicLayout() {
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <ProfileEditor /> },
       { path: 'settings', element: <BlogSettings /> },
       { path: 'api-keys', element: <ApiKeys /> },
+      { path: 'comments', element: <Comments /> },
     ],
   },
 ])

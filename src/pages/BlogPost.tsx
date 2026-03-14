@@ -3,6 +3,8 @@ import { generateHTML } from '@tiptap/html'
 import { usePostBySlug } from '@/hooks/usePosts'
 import { getRendererExtensions } from '@/lib/editor-extensions'
 import { formatDate } from '@/lib/utils'
+import { PostVotes } from '@/components/blog/PostVotes'
+import { PostComments } from '@/components/blog/PostComments'
 
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
@@ -35,15 +37,20 @@ export function BlogPost() {
         <h1 className="text-3xl font-semibold tracking-tight leading-snug">
           {post.title}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {formatDate(post.published_at)}
-        </p>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <p className="text-sm text-muted-foreground">
+            {formatDate(post.published_at)}
+          </p>
+          <PostVotes postId={post.id} />
+        </div>
       </header>
 
       <div
         className="blog-content"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
+
+      <PostComments postId={post.id} />
     </article>
   )
 }
