@@ -1,57 +1,21 @@
 import { useEffect, useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
-import { Profile } from '@/types'
+import { useProfile, useUpdateProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function ProfileEditor() {
-  const queryClient = useQueryClient()
-
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('*')
-        .eq('id', 1)
-        .single()
-
-      if (error) throw error
-      return data as Profile
-    },
-  })
-
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: Partial<Profile>) => {
-      const { data: result, error } = await supabase
-        .from('profile')
-        .update(data)
-        .eq('id', 1)
-        .select()
-        .single()
-
-      if (error) throw error
-      return result as Profile
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
+  const { data: profile, isLoading } = useProfile()
+  const updateProfile = useUpdateProfile()
 
   const [bio, setBio] = useState('')
   const [email, setEmail] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [instagramUrl, setInstagramUrl] = useState('')
   const [error, setError] = useState('')
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (profile) {
@@ -64,47 +28,56 @@ export function ProfileEditor() {
 
   const handleSave = async () => {
     setError('')
+    setSaved(false)
     try {
-      await updateProfileMutation.mutateAsync({
+      await updateProfile.mutateAsync({
         bio,
-        email,
+        email: email || null,
         linkedin_url: linkedinUrl || null,
         instagram_url: instagramUrl || null,
       })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save profile')
     }
   }
 
   if (isLoading) {
-    return <div>Loading profile...</div>
+    return <div className="text-muted-foreground py-12">Loading...</div>
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl space-y-6">
+      <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
+
+      {error && (
+        <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
+          {error}
+        </div>
+      )}
+      {saved && (
+        <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md border border-green-200">
+          Profile saved.
+        </div>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Edit your public profile information</CardDescription>
+          <CardTitle className="text-base">About</CardTitle>
+          <CardDescription>Shown on your homepage</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {error && (
-            <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
-              {error}
-            </div>
-          )}
-
+        <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="bio">Bio</Label>
-            <textarea
+            <Textarea
               id="bio"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full h-24 px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Your bio"
+              placeholder="A short bio shown on your homepage"
+              className="h-24"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -115,7 +88,15 @@ export function ProfileEditor() {
               placeholder="your@email.com"
             />
           </div>
+        </CardContent>
+      </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Social links</CardTitle>
+          <CardDescription>Shown as buttons on your homepage</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="linkedin">LinkedIn URL</Label>
             <Input
@@ -126,7 +107,6 @@ export function ProfileEditor() {
               placeholder="https://linkedin.com/in/yourprofile"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="instagram">Instagram URL</Label>
             <Input
@@ -137,15 +117,12 @@ export function ProfileEditor() {
               placeholder="https://instagram.com/yourprofile"
             />
           </div>
-
-          <Button
-            onClick={handleSave}
-            disabled={updateProfileMutation.isPending}
-          >
-            {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
-          </Button>
         </CardContent>
       </Card>
+
+      <Button onClick={handleSave} disabled={updateProfile.isPending}>
+        {updateProfile.isPending ? 'Saving...' : 'Save profile'}
+      </Button>
     </div>
   )
 }
