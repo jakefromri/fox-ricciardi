@@ -11,6 +11,9 @@ import { Login } from '@/pages/admin/Login'
 import { PostList } from '@/pages/admin/PostList'
 import { PostEditor } from '@/pages/admin/PostEditor'
 import { ProfileEditor } from '@/pages/admin/ProfileEditor'
+import { BlogSettings } from '@/pages/admin/BlogSettings'
+import { ApiKeys } from '@/pages/admin/ApiKeys'
+import { ApiDocs } from '@/pages/ApiDocs'
 
 function PublicLayout() {
   return (
@@ -29,18 +32,10 @@ export const router = createBrowserRouter([
     path: '/',
     element: <PublicLayout />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: 'blog',
-        element: <Blog />,
-      },
-      {
-        path: 'blog/:slug',
-        element: <BlogPost />,
-      },
+      { index: true, element: <Home /> },
+      { path: 'blog', element: <Blog /> },
+      { path: 'blog/:slug', element: <BlogPost /> },
+      { path: 'docs', element: <ApiDocs /> },
     ],
   },
   {
@@ -51,22 +46,12 @@ export const router = createBrowserRouter([
     path: '/admin',
     element: <AdminLayout />,
     children: [
-      {
-        path: 'posts',
-        element: <PostList />,
-      },
-      {
-        path: 'posts/new',
-        element: <PostEditor />,
-      },
-      {
-        path: 'posts/:id/edit',
-        element: <PostEditor />,
-      },
-      {
-        path: 'profile',
-        element: <ProfileEditor />,
-      },
+      { path: 'posts', element: <PostList /> },
+      { path: 'posts/new', element: <PostEditor /> },
+      { path: 'posts/:id/edit', element: <PostEditor /> },
+      { path: 'profile', element: <ProfileEditor /> },
+      { path: 'settings', element: <BlogSettings /> },
+      { path: 'api-keys', element: <ApiKeys /> },
     ],
   },
 ])

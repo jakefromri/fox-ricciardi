@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 
 export function Header() {
   const { session, signOut } = useAuth()
+  const { data: profile } = useProfile()
+
+  const blogName = profile?.blog_name || 'Jake Ricciardi'
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-10">
@@ -12,7 +16,7 @@ export function Header() {
           to="/"
           className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity"
         >
-          Jake Ricciardi
+          {blogName}
         </Link>
         <div className="flex items-center gap-5">
           <Link to="/blog">
@@ -21,7 +25,16 @@ export function Header() {
           {session && (
             <>
               <Link to="/admin/posts">
-                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Admin</span>
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Posts</span>
+              </Link>
+              <Link to="/admin/profile">
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Profile</span>
+              </Link>
+              <Link to="/admin/settings">
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Settings</span>
+              </Link>
+              <Link to="/admin/api-keys">
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">API Keys</span>
               </Link>
               <Button
                 variant="ghost"

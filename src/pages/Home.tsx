@@ -1,39 +1,36 @@
 import { Link } from 'react-router-dom'
 import { Mail, Linkedin, Instagram } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
-import { Profile } from '@/types'
+import { useProfile } from '@/hooks/useProfile'
 import { useRecentPosts } from '@/hooks/usePosts'
 import { PostCard } from '@/components/blog/PostCard'
 import { Button } from '@/components/ui/button'
 
 export function Home() {
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('*')
-        .eq('id', 1)
-        .single()
-      if (error) throw error
-      return data as Profile
-    },
-  })
-
+  const { data: profile } = useProfile()
   const { data: recentPosts } = useRecentPosts(3)
 
   return (
     <div className="space-y-16">
-      {/* Hero Section */}
+      {profile?.blog_cover_image_url && (
+        <div className="-mx-4 sm:-mx-6 -mt-8 rounded-b-xl overflow-hidden">
+          <img
+            src={profile.blog_cover_image_url}
+            alt={profile.blog_name || 'Blog cover'}
+            className="w-full h-52 sm:h-64 object-cover"
+          />
+        </div>
+      )}
+
       <section className="space-y-5 pt-4">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight mb-4 leading-tight">
-            Hi, I'm Jake
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 leading-tight">
+            {profile?.blog_tagline || 'Product Manager, builder, and writer.'}
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-            {profile?.bio || 'Product Manager, builder, and writer.'}
-          </p>
+          {profile?.bio && (
+            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
+              {profile.bio}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -64,7 +61,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* Recent Posts */}
       {recentPosts && recentPosts.length > 0 && (
         <section className="space-y-5">
           <div className="flex items-center justify-between">
