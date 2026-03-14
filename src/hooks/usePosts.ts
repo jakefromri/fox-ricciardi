@@ -169,3 +169,47 @@ export function useDeletePost(): UseMutationResult<
     },
   })
 }
+
+// Fetch the previous (older) and next (newer) published posts relative to a given post.
+// Used by the PostNavigation component.
+export function useAdjacentPosts(
+  publishedAt: string | null,
+  currentId: string
+): UseQueryResult<{ prev: Post | null; next: Post | null }, Error> {
+  return useQuery({
+    queryKey: ['posts', 'adjacent', currentId],
+    queryFn: async () => {
+      if (!publishedAt) return { prev: null, next: null }
+
+      const [prevResult, nextResult] = await Promise.all([
+        // Previous = older post
+        supabase
+          .from('posts')
+          .select('id, title, slug, excerpt, content, published_at')
+          .eq('status', 'published')
+          .lt('published_at', publishedAt)
+          .order('published_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        // Next = newer post
+        supabase
+          .from('posts')
+          .select('id, title, slug, excerpt, content, published_at')
+          .eq('status', 'published')
+          .gt('published_at', publishedAt)
+          .order('published_at', { ascending: true })
+          .limit(1)
+          .maybeSingle(),
+      ])
+
+      if (prevResult.error) throw prevResult.error
+      if (nextResult.error) throw nextResult.error
+
+      return {
+        prev: prevResult.data as Post | null,
+        next: nextResult.data as Post | null,
+      }
+    },
+    enabled: !!currentId && !!publishedAt,
+  })
+}

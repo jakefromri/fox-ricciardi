@@ -4,6 +4,7 @@ import { usePostBySlug } from '@/hooks/usePosts'
 import { getRendererExtensions } from '@/lib/editor-extensions'
 import { formatDate } from '@/lib/utils'
 import { PostVotes } from '@/components/blog/PostVotes'
+import { PostNavigation } from '@/components/blog/PostNavigation'
 import { PostComments } from '@/components/blog/PostComments'
 
 export function BlogPost() {
@@ -49,6 +50,8 @@ export function BlogPost() {
         className="blog-content"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
+
+      <PostNavigation currentPost={post} />
 
       <PostComments postId={post.id} />
     </article>
