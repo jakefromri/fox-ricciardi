@@ -11,6 +11,29 @@ export interface Post {
   updated_at: string
 }
 
+export interface Comment {
+  id: string
+  post_id: string
+  author_name: string
+  body: string
+  created_at: string
+  // populated when fetching all comments for admin (join to posts)
+  posts?: { title: string; slug: string }
+}
+
+export interface Vote {
+  id: string
+  post_id: string
+  vote_type: 'up' | 'down'
+  fingerprint: string
+  created_at: string
+}
+
+export interface VoteCounts {
+  up: number
+  down: number
+}
+
 export interface Profile {
   id: number
   bio: string

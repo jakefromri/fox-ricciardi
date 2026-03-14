@@ -33,6 +33,9 @@ export function Header() {
               <Link to="/admin/settings">
                 <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Settings</span>
               </Link>
+              <Link to="/admin/comments">
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Comments</span>
+              </Link>
               <Link to="/admin/api-keys">
                 <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">API Keys</span>
               </Link>
