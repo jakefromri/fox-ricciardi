@@ -35,6 +35,10 @@ export function PostEditor() {
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  // For edit mode, delay mounting the RichTextEditor until post data is loaded
+  // into state. TipTap only reads the `content` prop once at initialization,
+  // so we must not mount it until the real content is ready.
+  const [formReady, setFormReady] = useState(isNewPost)
 
   useEffect(() => {
     if (!isNewPost && post) {
@@ -44,6 +48,7 @@ export function PostEditor() {
       setContent(post.content || {})
       setStatus(post.status)
       setCoverImageUrl(post.cover_image_url || null)
+      setFormReady(true)
     }
   }, [post, isNewPost])
 
@@ -245,7 +250,24 @@ export function PostEditor() {
 
       <div className="space-y-2">
         <Label>Content</Label>
-        <RichTextEditor content={content} onChange={setContent} />
+        {formReady ? <RichTextEditor
+          content={content}
+          onChange={setContent}
+          onImageUpload={async (file) => {
+            const ext = file.name.split('.').pop()
+            const path = `posts/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+            const { error: uploadError } = await supabase.storage
+              .from('post-images')
+              .upload(path, file, { upsert: false })
+            if (uploadError) throw uploadError
+            const { data } = supabase.storage.from('post-images').getPublicUrl(path)
+            return data.publicUrl
+          }}
+        /> : (
+          <div className="h-32 rounded-lg border border-border flex items-center justify-center text-muted-foreground text-sm">
+            Loading content…
+          </div>
+        )}
       </div>
 
       <div className="flex gap-2">

@@ -1,9 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { generateHTML } from '@tiptap/html'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
 import { usePostBySlug } from '@/hooks/usePosts'
+import { getRendererExtensions } from '@/lib/editor-extensions'
 import { formatDate } from '@/lib/utils'
+import { PostVotes } from '@/components/blog/PostVotes'
+import { PostNavigation } from '@/components/blog/PostNavigation'
+import { PostComments } from '@/components/blog/PostComments'
 
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
@@ -17,10 +19,7 @@ export function BlogPost() {
     return <div className="text-muted-foreground py-12">Post not found.</div>
   }
 
-  const htmlContent = generateHTML(post.content, [
-    StarterKit,
-    Placeholder.configure({ placeholder: '' }),
-  ])
+  const htmlContent = generateHTML(post.content, getRendererExtensions())
 
   return (
     <article className="max-w-2xl mx-auto space-y-10">
@@ -35,20 +34,26 @@ export function BlogPost() {
         </div>
       )}
 
-
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-3xl font-semibold tracking-tight leading-snug">
           {post.title}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {formatDate(post.published_at)}
-        </p>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <p className="text-sm text-muted-foreground">
+            {formatDate(post.published_at)}
+          </p>
+          <PostVotes postId={post.id} />
+        </div>
       </header>
 
       <div
         className="blog-content"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
+
+      <PostNavigation currentPost={post} />
+
+      <PostComments postId={post.id} />
     </article>
   )
 }

@@ -148,3 +148,118 @@
 .blog-content strong {
   font-weight: 600;
 }
+
+.blog-content img.blog-image {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+  display: block;
+}
+
+/* ── Rich text editor content area ───────────────────────────────────────── */
+
+.editor-content .tiptap {
+  outline: none;
+  min-height: 320px;
+}
+
+/* Mirror blog-content styles inside the editor so WYSIWYG feel is accurate */
+.editor-content .tiptap p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.editor-content .tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.editor-content .tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.25;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.editor-content .tiptap ul,
+.editor-content .tiptap ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.editor-content .tiptap ul { list-style-type: disc; }
+.editor-content .tiptap ol { list-style-type: decimal; }
+.editor-content .tiptap li { margin-bottom: 0.25rem; }
+
+.editor-content .tiptap blockquote {
+  border-left: 3px solid hsl(var(--border));
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.editor-content .tiptap code {
+  font-size: 0.875em;
+  background: hsl(var(--muted));
+  padding: 0.15em 0.35em;
+  border-radius: 0.25rem;
+}
+
+.editor-content .tiptap pre {
+  background: hsl(var(--muted));
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.editor-content .tiptap pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.editor-content .tiptap img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  display: block;
+  cursor: default;
+}
+
+/* Selected image in editor */
+.editor-content .tiptap img.ProseMirror-selectednode {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.editor-content .tiptap a {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--border));
+  text-underline-offset: 3px;
+}
+
+.editor-content .tiptap a:hover {
+  text-decoration-color: hsl(var(--foreground));
+}
+
+.editor-content .tiptap hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+  margin: 2rem 0;
+}
+
+/* Placeholder */
+.editor-content .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
