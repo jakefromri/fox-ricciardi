@@ -22,6 +22,9 @@ export function Header() {
           <Link to="/blog">
             <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</span>
           </Link>
+          <Link to="/store">
+            <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Store</span>
+          </Link>
           {session && (
             <>
               <Link to="/admin/posts">
@@ -38,6 +41,9 @@ export function Header() {
               </Link>
               <Link to="/admin/api-keys">
                 <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">API Keys</span>
+              </Link>
+              <Link to="/admin/store">
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">Store</span>
               </Link>
               <Button
                 variant="ghost"
