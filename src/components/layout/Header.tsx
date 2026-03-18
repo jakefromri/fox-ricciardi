@@ -5,18 +5,24 @@ import { Button } from '@/components/ui/button'
 
 export function Header() {
   const { session, signOut } = useAuth()
-  const { data: profile } = useProfile()
+  const { data: profile, isLoading: profileLoading } = useProfile()
 
-  const blogName = profile?.blog_name || 'Jake Ricciardi'
+  const blogName = !profileLoading ? (profile?.blog_name || 'Jake Ricciardi') : null
+  const logoUrl = profile?.logo_url
 
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-10">
       <nav className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link
           to="/"
-          className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity"
+          className="flex items-center gap-2 hover:opacity-70 transition-opacity min-w-[4rem]"
         >
-          {blogName}
+          {logoUrl && (
+            <img src={logoUrl} alt={blogName ?? ''} className="h-8 w-auto object-contain" />
+          )}
+          {blogName && (
+            <span className="text-lg font-semibold tracking-tight">{blogName}</span>
+          )}
         </Link>
         <div className="flex items-center gap-5">
           <Link to="/blog">

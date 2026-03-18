@@ -9,13 +9,16 @@ import { ImagePlus, X } from 'lucide-react'
 
 export function BlogSettings() {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const logoInputRef = useRef<HTMLInputElement>(null)
   const { data: profile, isLoading } = useProfile()
   const updateProfile = useUpdateProfile()
 
   const [blogName, setBlogName] = useState('')
   const [blogTagline, setBlogTagline] = useState('')
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
 
@@ -24,6 +27,7 @@ export function BlogSettings() {
       setBlogName(profile.blog_name || 'Jake Ricciardi')
       setBlogTagline(profile.blog_tagline || '')
       setCoverImageUrl(profile.blog_cover_image_url || null)
+      setLogoUrl(profile.logo_url || null)
     }
   }, [profile])
 
@@ -60,6 +64,39 @@ export function BlogSettings() {
     }
   }
 
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a JPG, PNG, WebP, or GIF image.')
+      return
+    }
+
+    setIsUploadingLogo(true)
+    setError('')
+
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `site/logo-${Date.now()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('post-images')
+        .upload(path, file, { upsert: true })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage.from('post-images').getPublicUrl(path)
+      setLogoUrl(data.publicUrl)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Logo upload failed')
+    } finally {
+      setIsUploadingLogo(false)
+      if (logoInputRef.current) logoInputRef.current.value = ''
+    }
+  }
+
   const handleSave = async () => {
     if (!blogName.trim()) {
       setError('Blog name is required')
@@ -72,6 +109,7 @@ export function BlogSettings() {
         blog_name: blogName.trim(),
         blog_tagline: blogTagline.trim() || null,
         blog_cover_image_url: coverImageUrl,
+        logo_url: logoUrl,
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
@@ -167,7 +205,48 @@ export function BlogSettings() {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={updateProfile.isPending || isUploadingImage}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Logo</CardTitle>
+          <CardDescription>Shown in the site header as a home button. PNG with transparent background works best.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={handleLogoSelect}
+          />
+          {logoUrl ? (
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center group">
+                <img src={logoUrl} alt="Site logo" className="w-full h-full object-contain p-1" />
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => logoInputRef.current?.click()} disabled={isUploadingLogo}>
+                  Replace
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => { setLogoUrl(null); if (logoInputRef.current) logoInputRef.current.value = '' }}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => logoInputRef.current?.click()}
+              disabled={isUploadingLogo}
+              className="w-32 h-32 rounded-lg border-2 border-dashed border-border hover:border-muted-foreground transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ImagePlus className="h-6 w-6" />
+              <span className="text-sm">{isUploadingLogo ? 'Uploading...' : 'Add logo'}</span>
+            </button>
+          )}
+        </CardContent>
+      </Card>
+
+      <Button onClick={handleSave} disabled={updateProfile.isPending || isUploadingImage || isUploadingLogo}>
         {updateProfile.isPending ? 'Saving...' : 'Save settings'}
       </Button>
     </div>
