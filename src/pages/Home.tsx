@@ -6,7 +6,7 @@ import { PostCard } from '@/components/blog/PostCard'
 import { Button } from '@/components/ui/button'
 
 export function Home() {
-  const { data: profile } = useProfile()
+  const { data: profile, isLoading: profileLoading } = useProfile()
   const { data: recentPosts } = useRecentPosts(3)
 
   return (
@@ -23,8 +23,8 @@ export function Home() {
 
       <section className="space-y-5 pt-4">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3 leading-tight">
-            {profile?.blog_tagline || 'Product Manager, builder, and writer.'}
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 leading-tight min-h-[2.5rem]">
+            {!profileLoading && (profile?.blog_tagline || 'Product Manager, builder, and writer.')}
           </h1>
           {profile?.bio && (
             <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
