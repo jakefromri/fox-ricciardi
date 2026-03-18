@@ -43,5 +43,6 @@ export interface Profile {
   blog_name: string
   blog_tagline: string | null
   blog_cover_image_url: string | null
+  logo_url: string | null
   updated_at: string
 }
