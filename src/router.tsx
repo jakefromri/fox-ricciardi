@@ -17,6 +17,8 @@ import { Comments } from '@/pages/admin/Comments'
 import { ApiDocs } from '@/pages/ApiDocs'
 import { StorePage } from '@/pages/StorePage'
 import { StoreEditor } from '@/pages/admin/StoreEditor'
+import { Projects } from '@/pages/Projects'
+import { ProjectEditor } from '@/pages/admin/ProjectEditor'
 import { NotFound } from '@/pages/NotFound'
 
 function PublicLayout() {
@@ -41,6 +43,7 @@ export const router = createBrowserRouter([
       { path: 'blog/:slug', element: <BlogPost /> },
       { path: 'docs', element: <ApiDocs /> },
       { path: 'store', element: <StorePage /> },
+      { path: 'projects', element: <Projects /> },
       { path: '*', element: <NotFound /> },
     ],
   },
@@ -60,6 +63,7 @@ export const router = createBrowserRouter([
       { path: 'api-keys', element: <ApiKeys /> },
       { path: 'comments', element: <Comments /> },
       { path: 'store', element: <StoreEditor /> },
+      { path: 'projects', element: <ProjectEditor /> },
     ],
   },
 ])
