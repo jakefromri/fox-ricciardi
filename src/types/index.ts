@@ -34,6 +34,17 @@ export interface VoteCounts {
   down: number
 }
 
+export interface Project {
+  id: string
+  title: string
+  description: string
+  link: string
+  image_url: string | null
+  order: number
+  created_at: string
+  updated_at: string
+}
+
 export interface Profile {
   id: number
   bio: string
