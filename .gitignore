@@ -26,3 +26,21 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Internal working documents
+DEV_ENVIRONMENT_SETUP.md
+FINAL_BUILD_REPORT.md
+IMPLEMENTATION_NOTES.md
+VERCEL_ENV_SETUP.md
+architecture.md
+scope.md
+test-plan.md
+HANDOVER.md
+idea.md
+
+# Internal scripts
+publish_blog_series.py
+publish_blog_series.sh
+
+# Per-ticket change briefs
+changes/
