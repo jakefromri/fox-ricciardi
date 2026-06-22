@@ -28,11 +28,11 @@ export function Projects() {
               className="group border border-border rounded-xl overflow-hidden hover:border-foreground/30 transition-colors"
             >
               {project.image_url && (
-                <div className="aspect-video w-full overflow-hidden bg-muted">
+                <div className="aspect-video w-full bg-muted flex items-center justify-center p-4">
                   <img
                     src={project.image_url}
                     alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="max-w-full max-h-full object-contain"
                   />
                 </div>
               )}
