@@ -14,6 +14,7 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.env.local.hosted-dev-backup
 
 # Editor directories and files
 .vscode/*
